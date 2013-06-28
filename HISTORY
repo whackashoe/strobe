@@ -1,0 +1,13 @@
+97-06-16 : 1.04 : bug fixes (all sockets are always active).
+                  timeval_subtract() rewritten, minor optimisations
+                  fixed bug with always scanning port 1 when "-S file -f" .
+		  spelling police
+95-11-24 : 1.03 : bug fixes mainly relating to timeouts. new single port flag,
+                  bind port flag, bind address flag, read hostnames from stdin
+95-03-09 : 1.02 : compat fix. remalloc(NULL, length) broke under versions of sunos,
+                  causing Srealloc() to hang. <select.h> included for IRIX FD_*
+95-03-07 : 1.01 : bug fix. 'b' missing from getopt()
+95-03-07 : 1.00 : many trivial changes, some bug fixes.
+95-02-28 : 0.93 : char c; -> int c; in main() as char c caused problems with
+                  getopt() on systems such as IRIX which had unsigned char by default.
+95-02-27 : 0.92 : Initial public release.

@@ -1,0 +1,12 @@
+(1) Edit the Makefile to suit your system -- follow the descriptions
+    therein
+(2) type "make install"
+(3) test with "./strobe localhost"
+(4) read the man page
+
+(5) if you find any staticly assigned tcp ports that it doesn't know about, then
+    send me a description so I can add it to the strobe.services database.
+
+Happy strobing!
+
+-Julian Assange  (proff@suburbia.net)

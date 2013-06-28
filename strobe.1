@@ -1,0 +1,231 @@
+.\" "%W% %G%"
+.TH STROBE\ 1.05 1
+.SH NAME
+strobe \- Super optimised TCP port surveyor
+.SH SYNOPSIS
+.B strobe
+[ -vVmdbepPAtnSilfsaM ] [host1 ... [hostn]]
+.SH DESCRIPTION
+.I strobe
+is a network/security tool that locates and describes all listening tcp ports on a
+(remote) host or on many hosts in a bandwidth utilisation maximising, and
+process resource minimising manner. 
+.PP
+.I strobe
+approximates a parallel finite state machine internally. In non-linear multi-host
+mode it attempts to apportion bandwidth and sockets among the hosts very efficiently.
+This can reap appreciable gains in speed for multiple distinct hosts/routes. 
+.PP
+On a machine with a reasonable number of sockets,
+.I strobe
+is fast enough to port scan entire Internet sub domains. It is even possible to survey
+an entire small country in a reasonable time from a fast machine on the network backbone,
+provided the machine in question uses dynamic socket allocation or has had its static
+socket allocation increased very appreciably (check your kernel options). In this
+very limited application
+.I strobe
+is said to be faster than
+.B ISS2.1
+(a high quality commercial security scanner by cklaus@iss.net and friends) or
+.BR PingWare 
+(also commercial).
+.SH OPTIONS
+.TP
+.B \-v
+Verbose output.
+.TP
+.B \-V
+Verbose statistical output.
+.TP
+.B \-m
+Minimise output. Only print hostname, port tuples. Implies 
+.BR \-d .
+Useful for automated output parsing.
+.TP
+.B \-d
+Delete duplicate entries for port descriptions. i.e use only the first definition.
+.TP
+.B \-g
+Disable usage of
+.BR getpeername (2).
+On
+.B solaris
+2.3 machines this causes a core dump, for reasons unknown. This behaviour is fixed with
+.B solaris
+2.4. Under Linux, HP and perhaps other unix implementations, false tcp connection positives
+may occur when this option is activated.
+.TP
+.B \-s
+Statistical information describing the average of all hosts surveyed is sent to
+stderr on completion.
+.TP
+.B \-q
+Quiet mode. Don't print non-fatal errors or the (c) message.
+.TP
+.B \-d
+Display only the first description in the port services entry file (Cf.
+.BR \-B ).
+.TP
+.B \-o file
+Direct output (but not any messages which can be affected by
+.BR \-q )
+to file.
+.TP
+.B \-b number
+Beginning (starting) port number.
+.TP
+.B \-e number
+Ending port number.
+.TP
+.B \-p number
+Port number if you intend to scan a single port.
+.TP
+.B \-P number
+Local port to bind outgoing connection requests to.
+(you will normally need super-user privileges to bind ports smaller than 1024)
+.TP
+.B \-A address
+Interface address to send outgoing connection requests from for multi-homed machines.
+.TP
+.B \-t number
+Time after which a connection attempt to a completely unresponsive host/port is
+aborted.
+.TP
+.B \-n number
+Use this number of sockets in parallel (defaults to 64). 
+.I strobe
+attempts to figure out if
+.B number
+is greater than the quantity of available sockets at any point in time -- and
+if so, only use the amount found. On some UNIX implementations such as Solaris,
+this appears not to work correctly and you may find yourself with unusual errors
+such as
+.B NO ROUTE TO HOST
+when you hit the socket ceiling. Remember that 
+.I strobe
+probably isn't the only process on the system desiring a socket or two. Having
+.I strobe
+pilfer all the spare sockets away from 
+.BR inetd (8)
+and other daemons and clients isn't such a crash hot idea, unless you want
+to stop all new incoming and outgoing connections.
+.TP
+.B \-S file
+Change the default port services description file to
+.BR file .
+Note that if 
+.B \-S
+is not specified port services are loaded from one of
+.BR strobe.services ,
+.BR /usr/local/lib/strobe.services ,
+or
+.BR /etc/services .
+.TP
+.B \-i file
+Obtain hostnames to strobe from 
+.B file
+rather than from the command line. Note that only the first white-space
+separated word in each line of
+.B file
+is used, so one can feed in files such as
+.BR /etc/hosts .
+If filename is 
+.B '-'
+, stdin will be used.
+.TP
+.B \-l
+Probe hosts linearly (sequentially) rather than in parallel. The actual
+ports on each host are still checked in a parallel manner (with a parallelism
+of
+.B \-n
+(defaults to 64)).
+.TP
+.B \-f
+Fast mode, probe only the tcp ports detailed in the port services file (see
+.BR \-S ).
+.TP
+.B \-a number
+Abort and skip to the next host after ports upto to
+.B number
+have been probed and still no connections have occurred. Due to the parallel
+nature of the probing, reply packets for n+m may return before those relating
+to n. What this means is that ports >
+.B number
+may be probed. If
+.I strobe
+see's a connection on any one of these higher ports before its negated all
+possibility of a service listening on ports <=
+.B number
+then despite the fact that all ports up to and including
+.B number
+may turn out to be connectionless,
+.I strobe
+will `abort the abort'. This is considered optimal, if unusual behaviour.
+.TP
+.B \-M
+Mail a bug report, or tcp/udp port description to the current source maintainer.
+.SH EXAMPLES
+.PP
+strobe -n 120 -a 80 -i /etc/hosts -s -f -V -S services -o out
+.PP
+.I strobe
+all entries in
+.B /etc/hosts
+(identical ip addresses are skipped automagically)
+using 120 sockets in parallel, but only check the individual tcp ports mentioned
+in
+.BR services .
+If we have probed up to port 80 on a host
+and have still not yet evidenced a connection, then skip that host. Display speed/time
+statistics for each host and for the totality of hosts to stderr. Place the regular
+output in
+.BR out .
+.PP
+ypcat hosts | strobe -p 80 -t 2 -A 203.4.184.1 -P 53
+.PP
+.I strobe
+all hosts in your hosts YP/NIS-table for WWW-servers. Use a timeout of two seconds.
+Set the source address to the 203.4.184.1 interface. Make all connection requests
+appear to come from port 53 (DNS).
+.PP
+.SH BUGS
+.I Strobe
+performs no other security functions (yet) and does not verify route blocking against
+UDP or TCP handshake sequence guessing one-way IP spoofing attacks. 
+.SH AUTHOR
+.PP
+.I Julian Assange 
+.PP
+.RS
+.nf
+EMAIL:
+	strobe@suburbia.net
+	proff@suburbia.net
+.fi
+.RE
+.SH OFFICAL DISTRIBUTION
+.PP
+ftp://suburbia.net:/pub/strobe.tgz
+.SH COPYRIGHT
+Copyright (c) Julian Assange 1995-1999, All rights reserved.
+
+This software has only three copyright restrictions. Firstly, this
+copyright notice must remain intact and unmodified. Secondly, the
+Author, Julian Assange, must be appropriately and prominantly
+credited in any documentation associated with any derived work.
+Thirdly unless otherwise negotiated with the author, you may not
+sell this program commercially, reasonable distribution costs
+excepted.
+
+Use and or distribution of this software implies acceptance of the above.
+
+.BR So\ there .
+.PP
+.SH SEE ALSO
+.BR nslookup (1),
+.BR host (1),
+.BR dig (1),
+.BR socket (2),
+.BR bind (2),
+.BR connect (2),
+.BR iss (1).

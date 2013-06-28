@@ -1,0 +1,264 @@
+
+
+
+STROBE 1.05(1)                                     STROBE 1.05(1)
+
+
+NNAAMMEE
+       strobe - Super optimised TCP port surveyor
+
+SSYYNNOOPPSSIISS
+       ssttrroobbee [ -vVmdbepPAtnSilfsaM ] [host1 ... [hostn]]
+
+DDEESSCCRRIIPPTTIIOONN
+       _s_t_r_o_b_e   is  a  network/security  tool  that  locates  and
+       describes all listening tcp ports on a (remote) host or on
+       many hosts in a bandwidth utilisation maximising, and pro-
+       cess resource minimising manner.
+
+       _s_t_r_o_b_e approximates a parallel finite state machine inter-
+       nally. In non-linear multi-host mode it attempts to appor-
+       tion bandwidth and sockets  among  the  hosts  very  effi-
+       ciently.   This  can  reap  appreciable gains in speed for
+       multiple distinct hosts/routes.
+
+       On a machine with a reasonable number of  sockets,  _s_t_r_o_b_e
+       is  fast  enough to port scan entire Internet sub domains.
+       It is even possible to survey an entire small country in a
+       reasonable  time  from a fast machine on the network back-
+       bone, provided the machine in question uses dynamic socket
+       allocation   or  has  had  its  static  socket  allocation
+       increased very appreciably (check your kernel options). In
+       this  very limited application _s_t_r_o_b_e is said to be faster
+       than IISSSS22..11 (a high quality commercial security scanner by
+       cklaus@iss.net and friends) or PPiinnggWWaarree (also commercial).
+
+OOPPTTIIOONNSS
+       --vv     Verbose output.
+
+       --VV     Verbose statistical output.
+
+       --mm     Minimise output. Only print hostname, port  tuples.
+              Implies --dd.  Useful for automated output parsing.
+
+       --dd     Delete duplicate entries for port descriptions. i.e
+              use only the first definition.
+
+       --gg     Disable usage of ggeettppeeeerrnnaammee(2).   On  ssoollaarriiss  2.3
+              machines  this  causes  a  core  dump,  for reasons
+              unknown. This behaviour is fixed with ssoollaarriiss  2.4.
+              Under  Linux, HP and perhaps other unix implementa-
+              tions, false tcp  connection  positives  may  occur
+              when this option is activated.
+
+       --ss     Statistical  information  describing the average of
+              all hosts surveyed is sent to stderr on completion.
+
+       --qq     Quiet mode. Don't print non-fatal errors or the (c)
+              message.
+
+       --dd     Display only the  first  description  in  the  port
+
+
+
+                                                                1
+
+
+
+
+
+STROBE 1.05(1)                                     STROBE 1.05(1)
+
+
+              services entry file (Cf.  --BB).
+
+       --oo ffiillee
+              Direct  output  (but  not any messages which can be
+              affected by --qq) to file.
+
+       --bb nnuummbbeerr
+              Beginning (starting) port number.
+
+       --ee nnuummbbeerr
+              Ending port number.
+
+       --pp nnuummbbeerr
+              Port number if you intend to scan a single port.
+
+       --PP nnuummbbeerr
+              Local port to bind outgoing connection requests to.
+              (you  will  normally  need super-user privileges to
+              bind ports smaller than 1024)
+
+       --AA aaddddrreessss
+              Interface  address  to  send  outgoing   connection
+              requests from for multi-homed machines.
+
+       --tt nnuummbbeerr
+              Time  after  which  a  connection attempt to a com-
+              pletely unresponsive host/port is aborted.
+
+       --nn nnuummbbeerr
+              Use this number of sockets in parallel (defaults to
+              64).   _s_t_r_o_b_e  attempts  to figure out if nnuummbbeerr is
+              greater than the quantity of available  sockets  at
+              any point in time -- and if so, only use the amount
+              found.  On  some  UNIX  implementations   such   as
+              Solaris, this appears not to work correctly and you
+              may find yourself with unusual errors  such  as  NNOO
+              RROOUUTTEE  TTOO  HHOOSSTT  when  you  hit the socket ceiling.
+              Remember that _s_t_r_o_b_e probably isn't the  only  pro-
+              cess on the system desiring a socket or two. Having
+              _s_t_r_o_b_e pilfer  all  the  spare  sockets  away  from
+              iinneettdd(8) and other daemons and clients isn't such a
+              crash hot idea, unless you want  to  stop  all  new
+              incoming and outgoing connections.
+
+       --SS ffiillee
+              Change  the  default port services description file
+              to ffiillee.  Note that if --SS  is  not  specified  port
+              services  are  loaded  from one of ssttrroobbee..sseerrvviicceess,
+              //uussrr//llooccaall//lliibb//ssttrroobbee..sseerrvviicceess, or //eettcc//sseerrvviicceess.
+
+       --ii ffiillee
+              Obtain hostnames to strobe from  ffiillee  rather  than
+              from  the  command  line.  Note that only the first
+              white-space separated word in each line of ffiillee  is
+
+
+
+                                                                2
+
+
+
+
+
+STROBE 1.05(1)                                     STROBE 1.05(1)
+
+
+              used,  so one can feed in files such as //eettcc//hhoossttss.
+              If filename is ''--'' , stdin will be used.
+
+       --ll     Probe hosts linearly (sequentially) rather than  in
+              parallel.  The  actual ports on each host are still
+              checked in a parallel manner (with a parallelism of
+              --nn (defaults to 64)).
+
+       --ff     Fast mode, probe only the tcp ports detailed in the
+              port services file (see --SS).
+
+       --aa nnuummbbeerr
+              Abort and skip to the next host after ports upto to
+              nnuummbbeerr  have  been  probed and still no connections
+              have occurred. Due to the parallel  nature  of  the
+              probing,  reply  packets  for n+m may return before
+              those relating to n. What this means is that  ports
+              >  nnuummbbeerr  may be probed. If _s_t_r_o_b_e see's a connec-
+              tion on any one of these higher  ports  before  its
+              negated  all  possibility of a service listening on
+              ports <= nnuummbbeerr then  despite  the  fact  that  all
+              ports up to and including nnuummbbeerr may turn out to be
+              connectionless, _s_t_r_o_b_e will `abort the abort'. This
+              is considered optimal, if unusual behaviour.
+
+       --MM     Mail  a  bug report, or tcp/udp port description to
+              the current source maintainer.
+
+EEXXAAMMPPLLEESS
+       strobe -n 120 -a 80 -i /etc/hosts -s -f -V -S services  -o
+       out
+
+       _s_t_r_o_b_e  all  entries in //eettcc//hhoossttss (identical ip addresses
+       are skipped automagically) using 120 sockets in  parallel,
+       but  only check the individual tcp ports mentioned in sseerr--
+       vviicceess.  If we have probed up to port 80 on a host and have
+       still not yet evidenced a connection, then skip that host.
+       Display speed/time statistics for each host  and  for  the
+       totality  of  hosts to stderr. Place the regular output in
+       oouutt.
+
+       ypcat hosts | strobe -p 80 -t 2 -A 203.4.184.1 -P 53
+
+       _s_t_r_o_b_e all hosts  in  your  hosts  YP/NIS-table  for  WWW-
+       servers.  Use  a  timeout  of two seconds.  Set the source
+       address to the 203.4.184.1 interface. Make all  connection
+       requests appear to come from port 53 (DNS).
+
+
+BBUUGGSS
+       _S_t_r_o_b_e performs no other security functions (yet) and does
+       not verify route blocking against  UDP  or  TCP  handshake
+       sequence guessing one-way IP spoofing attacks.
+
+
+
+
+                                                                3
+
+
+
+
+
+STROBE 1.05(1)                                     STROBE 1.05(1)
+
+
+AAUUTTHHOORR
+       _J_u_l_i_a_n _A_s_s_a_n_g_e
+
+              EMAIL:
+                   strobe@suburbia.net
+                   proff@suburbia.net
+
+OOFFFFIICCAALL DDIISSTTRRIIBBUUTTIIOONN
+       ftp://suburbia.net:/pub/strobe.tgz
+
+CCOOPPYYRRIIGGHHTT
+       Copyright   (c)   Julian  Assange  1995-1999,  All  rights
+       reserved.
+
+       This  software  has  only  three  copyright  restrictions.
+       Firstly,  this  copyright  notice  must  remain intact and
+       unmodified. Secondly, the Author, Julian Assange, must  be
+       appropriately  and  prominantly credited in any documenta-
+       tion associated with any  derived  work.   Thirdly  unless
+       otherwise  negotiated  with  the  author, you may not sell
+       this program commercially, reasonable  distribution  costs
+       excepted.
+
+       Use  and  or  distribution of this software implies accep-
+       tance of the above.
+
+       SSoo tthheerree.
+
+
+SSEEEE AALLSSOO
+       nnssllooookkuupp(1), hhoosstt(1),  ddiigg(1),  ssoocckkeett(2),  bbiinndd(2),  ccoonn--
+       nneecctt(2), iissss(1).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                4
+
+

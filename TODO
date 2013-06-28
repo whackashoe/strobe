@@ -1,0 +1,32 @@
+If anyone has any thing to add to this, please let me know.
+
+
+o	capture first n seconds of sucessful connects. tickle connection
+	with bytes from user specified file. display with reg stats.
+
+o	when we hit 111 slurp port mapper descriptions. map to description
+	&& hit lists. hack up some portable non-blocking rpc routines, or
+        at least hand craft the required sequence.
+
+o	make the port list more oo. have a func and exec field. pass critical
+	data into env, sock to stdin/out. fork off seconder func/exec. take
+        stderr and add to port desc. need to limit forks to reasonable 
+        levels. don't loose sight of speed/parallel objectives.
+
+o	hack up a portable simple threads package, so we can get out of being
+	a parallel finite-state machine. Can we do this effectively by using
+        setjmp to pass control back to the threader at non-critical moments?
+
+o	write output parser to beautify/segment output according to 
+        machine/domain/topology.
+
+o	investigate hand crafting (via /dev/nit etc) the initial TCP con
+        req packet, and pulling the result out directly. we avoid kernel
+        socket limitations and sending first ACK. should be able to
+        avoid all tcp wrapper (etc) logs this way, as well as save on
+        bandwidth. Is this worth the portability/root perms issues?
+
+o	include simple udp checks for well-known services. maintain external
+        db of snached udp packets, w/pointer -> reply/send addr offsets. user
+        configurable retries. investigate adding target machines to a multi
+        cast group.

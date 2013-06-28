@@ -1,0 +1,18 @@
+proff@suburbia.net (Julian Assange)		- Author
+
+edturka@statt.ericsson.se (Urban Kaveus)	- Cool bug fixes, stdin of hosts
+                                                  and -p flag
+
+Tomasz Motylewski <motyl@ipl.net>		- Bug fixes - socket allocation
+
+bac@eis.calstate.edu (Brian Court)		- AIX port
+jonathan@IME.UCLA.EDU (Jonathan E. Katz)	- AIX bug fix
+gdm@shrdlu.kwnet.on.ca (Giles D Malet)		- Man page bug fix
+wbader@EECS.Lehigh.Edu (wbader)			- SCO port/bug fix
+
+chrissy@four.net (Chrissy)			- Loan of sun4/SunOs4.1.3
+
+Scott Gifford <sgifford@tir.com>		- Host specific port-ranges e.g
+						  host:1-1024,6000
+						- Faster processing of banner
+						  timeouts
